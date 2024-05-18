@@ -1,0 +1,371 @@
+---
+title: "ISOM 673 Final Project: Twitch Network Analysis"
+author: "Yifei Wang"
+date: "2024-04-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Set-up
+```{r}
+library(igraph)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r}
+setwd("C:/Users/tiffp/OneDrive - Emory University/School/2024 Spring/ISOM 673 Network Analytics/Final Project")
+engb_edges <- read.csv("ENGB_edges.csv")
+engb_target <- read.csv("ENGB_target.csv")
+
+engb_target$mature <- as.factor(engb_target$mature)
+engb_target$partner <- as.factor(engb_target$partner)
+
+summary(engb_target)
+```
+
+```{r}
+# Histogram for 'days'
+hist(engb_target$days, main = "Distribution of Days", xlab = "Days", ylab = "Frequency", col = "skyblue")
+
+# Histogram for 'views'
+hist(engb_target$views, main = "Distribution of Views", xlab = "Views", ylab = "Frequency", col = "skyblue")
+
+# Bar plot for 'mature'
+barplot(table(engb_target$mature), main = "Distribution of Mature", xlab = "Mature", ylab = "Frequency", col = "skyblue")
+
+# Bar plot for 'partner'
+barplot(table(engb_target$partner), main = "Distribution of Partner", xlab = "Partner", ylab = "Frequency", col = "skyblue")
+```
+
+```{r}
+merged_from <- merge(engb_edges, engb_target, by.x = "from", by.y = "new_id", suffixes = c("_from", "_to"))
+merged_to <- merge(engb_edges, engb_target, by.x = "to", by.y = "new_id", suffixes = c("_from", "_to"))
+
+engb <- merge(merged_from, merged_to, by = c("from", "to"))
+head(engb)
+```
+
+
+
+## The network graph
+```{r}
+graph <- graph_from_data_frame(engb, directed = TRUE)
+
+plot(graph,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+```{r}
+# 10% of total verticies
+set.seed(10)
+
+sample_size <- floor(vcount(graph) * 0.1)
+sampled_vertices <- sample(V(graph), sample_size)
+
+sampled_graph <- induced_subgraph(graph, sampled_vertices)
+plot(sampled_graph,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+```{r}
+library(mclust)
+adj_matrix <- as_adjacency_matrix(sampled_graph, sparse = TRUE)
+fit <- Mclust(adj_matrix)
+
+best_model <- fit$G
+cat("Number of clusters given by the best fitting model:", best_model, "\n")
+```
+The clustering results was not meaningful - 8 out of 9 clusters consisted of only 1 nodes.
+
+
+
+## The most 'central' streamers
+```{r}
+indegree <- degree(graph, mode = "in")
+outdegree <- degree(graph, mode = "out")
+closeness <- closeness(graph, mode ="total")
+betweenness <- betweenness(graph, directed = TRUE)
+
+centrality_table <- data.table(
+  ID = V(graph)$name,
+  Indegree = indegree,
+  Outdegree = outdegree,
+  Closeness = closeness,
+  Betweenness = betweenness
+)
+
+head(centrality_table)
+```
+
+```{r}
+get_top_n <- function(data, centrality_measure, n = 10) {
+  top_n <- data[order(-data[[centrality_measure]]), ]
+  head(top_n, n)
+}
+
+centrality_measures <- c("Indegree", "Outdegree", "Closeness", "Betweenness")
+
+for (measure in centrality_measures) {
+  cat("Top 10 based on", measure, ":\n")
+  print(get_top_n(centrality_table, measure, 10))
+  cat("\n")
+}
+```
+
+```{r}
+# does a relationship exist between the chosen two streamers?
+any(engb$from == 4406 & engb$to == 2345)
+```
+
+```{r}
+# top streamers that appear across metrics
+top50_Indegree <- centrality_table$ID[order(-centrality_table$Indegree)][1:50]
+top50_Outdegree <- centrality_table$ID[order(-centrality_table$Outdegree)][1:50]
+top50_Betweenness <- centrality_table$ID[order(-centrality_table$Betweenness)][1:50]
+top50_Closeness <- centrality_table$ID[order(-centrality_table$Closeness)][1:50]
+
+intersection_top50 <- intersect(intersect(intersect(top50_Indegree, top50_Outdegree), top50_Betweenness), top50_Closeness)
+print(intersection_top50)
+```
+
+```{r}
+info_intersection_top50 <- engb_target[engb_target$new_id %in% intersection_top50, ]
+print(info_intersection_top50)
+```
+
+
+### Correlation between centrality measures
+```{r}
+correlation_matrix <- cor(centrality_table[, c("Indegree", "Outdegree", "Closeness", "Betweenness")])
+print(correlation_matrix)
+```
+
+We note that indegree and outdegree are closely correlated with betweenness, but low with one another. In general, correlation with closeness is low.
+
+Closeness indicates how close a node is to all other nodes in the network and therefore looks at the shortest path. This could be due to the fact that our network is densely structured (nodes are rarely bridges and those that are bridges would differ from the ones that have a high number of direct ties).
+
+
+### Indegree subgraphs
+```{r}
+# subgraph involving the top nodes
+
+# get IDs
+top_nodes <- get_top_n(centrality_table, "Indegree", n = 10)
+top_node_ids <- top_nodes$ID
+
+# extract edges involving top nodes from the original graph
+subgraph_edges <- get.edgelist(graph)[which(get.edgelist(graph)[, 1] %in% top_node_ids | get.edgelist(graph)[, 2] %in% top_node_ids), ]
+
+# plotting the subgraph
+top_indegree_all <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_indegree_all,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+
+```{r}
+# subgraph of only top nodes
+subgraph_edges <- get.edgelist(graph)[
+  which(
+    get.edgelist(graph)[, 1] %in% top_node_ids & 
+    get.edgelist(graph)[, 2] %in% top_node_ids
+  ),
+]
+
+top_indegree_only <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_indegree_only, vertex.label = NA, vertex.size = 10, edge.arrow.size = 0.5, edge.curved = 0.1)
+```
+
+
+### Outdegree subgraphs
+```{r}
+# subgraph involving the top nodes
+
+# get IDs
+top_nodes <- get_top_n(centrality_table, "Outdegree", n = 10)
+top_node_ids <- top_nodes$ID
+
+# extract edges involving top nodes from the original graph
+subgraph_edges <- get.edgelist(graph)[which(get.edgelist(graph)[, 1] %in% top_node_ids | get.edgelist(graph)[, 2] %in% top_node_ids), ]
+
+# plotting the subgraph
+top_outdegree_all <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_outdegree_all,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+```{r}
+# subgraph of only top nodes
+subgraph_edges <- get.edgelist(graph)[
+  which(
+    get.edgelist(graph)[, 1] %in% top_node_ids & 
+    get.edgelist(graph)[, 2] %in% top_node_ids
+  ),
+]
+
+top_outdegree_only <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_outdegree_only, vertex.label = NA, vertex.size = 10, edge.arrow.size = 0.5, edge.curved = 0.1)
+```
+
+
+### Closeness subgraphs
+```{r}
+# subgraph involving the top nodes
+
+# get IDs
+top_nodes <- get_top_n(centrality_table, "Closeness", n = 10)
+top_node_ids <- top_nodes$ID
+
+# extract edges involving top nodes from the original graph
+subgraph_edges <- get.edgelist(graph)[which(get.edgelist(graph)[, 1] %in% top_node_ids | get.edgelist(graph)[, 2] %in% top_node_ids), ]
+
+# plotting the subgraph
+top_closeness_all <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_closeness_all,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+```{r}
+# subgraph of only top nodes
+subgraph_edges <- get.edgelist(graph)[
+  which(
+    get.edgelist(graph)[, 1] %in% top_node_ids & 
+    get.edgelist(graph)[, 2] %in% top_node_ids
+  ),
+]
+
+top_closeness_only <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_closeness_only, vertex.label = NA, vertex.size = 10, edge.arrow.size = 0.5, edge.curved = 0.1)
+```
+
+
+### Betweenness subgraphs
+```{r}
+# subgraph involving the top nodes
+
+# get IDs
+top_nodes <- get_top_n(centrality_table, "Betweenness", n = 10)
+top_node_ids <- top_nodes$ID
+
+# extract edges involving top nodes from the original graph
+subgraph_edges <- get.edgelist(graph)[which(get.edgelist(graph)[, 1] %in% top_node_ids | get.edgelist(graph)[, 2] %in% top_node_ids), ]
+
+# plotting the subgraph
+top_betweenness_all <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_betweenness_all,
+     vertex.label = NA,
+     vertex.shape = "circle",
+     vertex.size = 2,
+     edge.arrow.size = 0.1,
+     edge.curved = 0.2,
+     edge.label = NA)
+```
+
+```{r}
+# subgraph of only top nodes
+subgraph_edges <- get.edgelist(graph)[
+  which(
+    get.edgelist(graph)[, 1] %in% top_node_ids & 
+    get.edgelist(graph)[, 2] %in% top_node_ids
+  ),
+]
+
+top_betweenness_only <- graph_from_edgelist(subgraph_edges, directed = TRUE)
+plot(top_betweenness_only, vertex.label = NA, vertex.size = 10, edge.arrow.size = 0.5, edge.curved = 0.1)
+```
+
+
+```{r}
+par(mfrow = c(2, 2))
+
+plot(top_indegree_only, vertex.label = NA, vertex.size = 20, edge.arrow.size = 0.5, edge.curved = 0.1,
+     main = "Top 10 Streamers by Indegree")
+
+plot(top_outdegree_only, vertex.label = NA, vertex.size = 20, edge.arrow.size = 0.5, edge.curved = 0.1,
+     main = "Top 10 Streamers by Outdegree")
+
+plot(top_closeness_only, vertex.label = NA, vertex.size = 20, edge.arrow.size = 0.5, edge.curved = 0.1,
+     main = "Top 10 Streamers by Closeness")
+
+plot(top_betweenness_only, vertex.label = NA, vertex.size = 20, edge.arrow.size = 0.5, edge.curved = 0.1,
+     main = "Top 10 Streamers by Betweenness")
+
+```
+
+
+
+## Mapping out dependence from potential ties (Tie prediction)
+```{r}
+library(ergm)
+library(network)
+
+net <- network(engb[, c('from', 'to')], directed = TRUE)
+vertex_attrs <- c('id.x', 'days.x', 'mature.x', 'views.x', 'partner.x', 'id.y', 'days.y', 'mature.y', 'views.y', 'partner.y')
+net %v% vertex_attrs <- engb[, vertex_attrs]
+```
+
+
+```{r}
+m1 <- ergm(net ~edges)
+summary(m1)
+```
+
+```{r}
+m2 <- ergm(net ~edges + mutual)
+summary(m2)
+```
+
+```{r}
+m3 <- ergm(net ~edges + nodefactor('mature.x') + nodefactor('mature.y') + 
+             nodefactor('partner.x') + nodefactor('partner.y'))
+summary(m3)
+```
+
+```{r}
+m4 <- ergm(net ~edges + nodematch('mature.x') + nodematch('mature.y') + 
+             nodematch('partner.x') + nodematch('partner.y') +
+             nodematch('views.x') + nodematch('views.y') +
+             nodematch('days.x') + nodematch('days.y'))
+summary(m4)
+```
+
+```{r}
+m5 <- ergm(net ~edges + nodefactor('mature.x') + nodefactor('mature.y') + 
+             nodefactor('partner.x') + nodefactor('partner.y') +
+             nodematch('views.x') + nodematch('views.y') +
+             nodematch('days.x') + nodematch('days.y'))
+summary(m5)
+```
+
