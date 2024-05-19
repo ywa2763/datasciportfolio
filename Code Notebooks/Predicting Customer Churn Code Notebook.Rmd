@@ -1,0 +1,280 @@
+---
+title: "ISOM 599 Final Project"
+author: "Yifei Wang, Laurie Ye, Yuki Ying"
+date: "2024-04-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(caret)
+library(ModelMetrics)
+library(pROC)
+library(randomForest)
+library(caret)
+library(keras)
+library(dplyr)
+library(ggplot2)
+library(xgboost)
+library(tensorflow)
+```
+
+
+## Data Pre-Processing
+```{r}
+churn <- read.csv('https://zhang-datasets.s3.us-east-2.amazonaws.com/telcoChurn.csv')
+head(churn)
+```
+
+```{r}
+# remove customer ID column (irrelevant to our model)
+churn <- churn[, !names(churn) %in% "customerID"]
+
+# convert target column to a variable
+churn$Churn <- factor(churn$Churn, levels = c("No", "Yes"))
+
+# categorical
+categorical_columns <- c("gender", "Partner", "Dependents", "PhoneService", 
+                         "InternetService", "Contract", "PaperlessBilling", "Churn")
+churn[categorical_columns] <- lapply(churn[categorical_columns], factor)
+
+churn$SeniorCitizen <- factor(churn$SeniorCitizen, levels = c("0", "1"), labels = c("No", "Yes"))
+
+# standardize numerical columns
+numerical_columns <- c("tenure", "MonthlyCharges", "TotalCharges")
+churn[numerical_columns] <- scale(churn[numerical_columns])
+
+# impute missing
+churn$MonthlyCharges <- ifelse(is.na(churn$MonthlyCharges), mean(churn$MonthlyCharges, na.rm = TRUE), churn$MonthlyCharges)
+churn$TotalCharges <- ifelse(is.na(churn$TotalCharges), mean(churn$TotalCharges, na.rm = TRUE), churn$TotalCharges)
+```
+
+
+```{r}
+set.seed(1)
+
+columns_to_remove <- c("OnlineSecurity", "OnlineBackup", "DeviceProtection", 
+                       "TechSupport", "StreamingMovies", "StreamingTV", 
+                       "MultipleLines", "PaymentMethod", "TotalCharges")
+
+churn <- churn[, !colnames(churn) %in% columns_to_remove]
+x = model.matrix(Churn~., churn)
+y = churn$Churn
+
+# train-test split
+train_id <- sample(1:nrow(x), 0.7 * nrow(x))
+test_id <- -train_id
+
+x_train <- x[train_id,]
+y_train <- y[train_id]
+
+x_test <- x[test_id,]
+y_test <- y[test_id]
+```
+
+
+## Logistic Regression Model
+```{r}
+library(glmnet)
+
+log_model <- glm(Churn~., data = churn[train_id,], family = "binomial")
+```
+
+```{r}
+predictions <- predict(log_model, newdata = churn[test_id, ], type = "response")
+predicted_classes <- ifelse(predictions > 0.5, "Yes", "No")
+
+conf_matrix <- table(y[test_id], predicted_classes)
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+
+print(conf_matrix)
+print(paste("Accuracy:", round(accuracy, 2)))
+```
+
+```{r}
+summary(log_model)
+```
+
+
+```{r}
+# logistic regression with feature selection - no significant improvements
+stepwise_model <- step(log_model, direction="both", trace=0) 
+
+predictions <- predict(stepwise_model, newdata = churn[test_id, ], type = "response")
+predicted_classes <- ifelse(predictions > 0.5, "Yes", "No")
+
+conf_matrix <- table(y[test_id], predicted_classes)
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+
+print(conf_matrix)
+print(paste("Accuracy:", round(accuracy, 2)))
+```
+
+```{r}
+summary(stepwise_model)
+```
+
+```{r}
+# calculating the odds ratios
+odds_ratios_stepwise <- exp(coef(stepwise_model))
+print(odds_ratios_stepwise)
+```
+
+
+## Neural Net Model
+```{r}
+library(ISLR)
+library(keras)
+
+set.seed(1)
+num_features <- ncol(x)
+
+model <- keras_model_sequential() %>% # 4 layers
+  layer_dense(units = 128, activation = 'relu', 
+              kernel_regularizer = regularizer_l2(0.001), 
+              input_shape = num_features) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 64, activation = 'relu', 
+              kernel_regularizer = regularizer_l2(0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 32, activation = 'relu', 
+              kernel_regularizer = regularizer_l2(0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 1, activation = 'sigmoid')
+```
+
+
+```{r}
+model %>% compile(
+    optimizer = optimizer_adam(lr = 0.001),
+    loss = 'binary_crossentropy',
+    metrics = c('accuracy')
+)
+
+y_train <- ifelse(y[train_id] == "Yes", 1, 0) # convert to binary labels for Keras
+
+history <- model %>% fit(x_train, y_train, batch_size = 256, epochs = 200,
+                             validation_split = 0.3)
+```
+
+
+```{r}
+predictions <- model %>% predict(x_test)
+predicted_classes <- ifelse(predictions > 0.5, 1, 0)
+actual_classes <- ifelse(y_test == "Yes", 1, 0)
+
+#accuracy
+accuracy <- mean(predicted_classes == actual_classes)
+print(paste("accuracy:", round(accuracy, 2)))
+```
+
+
+## Random Forest
+```{r}
+rf_model <- randomForest(x_train, as.factor(y_train), ntree=500, importance=TRUE)
+
+print(importance(rf_model))
+
+importance_scores <- importance(rf_model, type=1)
+importance_data <- data.frame(Feature=rownames(importance_scores), Importance=importance_scores[, "MeanDecreaseAccuracy"])
+print(importance_data)
+
+# visualization
+ggplot(importance_data, aes(x=reorder(Feature, Importance), y=Importance)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  labs(title="Feature Importance", x="Features", y="Importance")
+
+train_data_df <- as.data.frame(x_train)
+test_data_df <- as.data.frame(x_test)
+train_response_df <- data.frame(Response = y_train)
+test_response_df <- data.frame(Response = y_test)
+
+# top features 
+top_features <- names(importance_scores[importance_scores[, "MeanDecreaseAccuracy"] > median(importance_scores[, "MeanDecreaseAccuracy"]), ])
+selected_train_data <- train_data_df[, top_features]
+selected_test_data <- test_data_df[, top_features]
+```
+
+
+## Xgboost
+```{r}
+set.seed(1)
+y <- factor(churn$Churn, levels = c("No", "Yes"))
+
+train_matrix <- model.matrix(~ . -1, data = selected_train_data)
+test_matrix <- model.matrix(~ . -1, data = selected_test_data)
+
+train_response <- y[train_id]
+test_response <- y[test_id]
+
+# XGBoost DMatrix 
+dtrain <- xgb.DMatrix(data = train_matrix, label = as.numeric(train_response) - 1)
+dtest <- xgb.DMatrix(data = test_matrix, label = as.numeric(test_response) - 1)
+
+params <- list(
+    booster = "gbtree",
+    objective = "binary:logistic",
+    eta = 0.01,
+    gamma = 0,
+    max_depth = 6,
+    subsample = 0.75,
+    colsample_bytree = 0.75,
+    eval_metric = "auc"
+)
+
+# train model
+xgb_model <- xgb.train(params = params, data = dtrain, nrounds = 100)
+```
+
+
+```{r}
+xgb_predictions <- predict(xgb_model, dtest)
+predicted_classes <- ifelse(xgb_predictions > 0.5, 1, 0)
+actual_classes <- ifelse(y_test == "Yes", 1, 0)
+
+#accuracy
+accuracy <- mean(predicted_classes == actual_classes)
+print(paste("accuracy:", round(accuracy, 2)))
+```
+
+
+## Adaboost
+```{r}
+library(gbm)
+set.seed(1)
+
+dtrain <- xgb.DMatrix(data = train_matrix, label = as.numeric(train_response) - 1)
+dtest <- xgb.DMatrix(data = test_matrix, label = as.numeric(test_response) - 1)
+
+params <- list(
+    booster = "gblinear",
+    objective = "reg:linear", 
+    eta = 0.1,
+    gamma = 0, 
+    max_depth = 6,
+    subsample = 0.75, 
+    colsample_bytree = 0.75, 
+    eval_metric = "rmse", 
+    rate_drop = 0.1, 
+    skip_drop = 0.5, 
+    tree_method = "hist" 
+)
+
+# train model
+ada_model <- xgb.train(params = params, data = dtrain, nrounds = 100)
+```
+
+```{r}
+ada_predictions <- predict(ada_model, dtest)
+predicted_classes <- ifelse(ada_predictions > 0.5, 1, 0)
+actual_classes <- ifelse(y_test == "Yes", 1, 0)
+
+#accuracy
+accuracy <- mean(predicted_classes == actual_classes)
+print(paste("accuracy:", round(accuracy, 2)))
+```
+
