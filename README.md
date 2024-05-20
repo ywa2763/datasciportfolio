@@ -26,7 +26,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Code Notebook**: [Customer Characteristics Analysis Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/24ccf3c99ee53f283cd0caf0b0f1dfe67b55bce6/Code%20Notebooks/Customer%20Characteristics%20Analysis%20Code.ipynb)
 
-  <br />
+<br />
   
 ### Predicting Customer Churn
 **Description**: This project addresses the issue of customer churn for a telecommunications company experiencing a loss of landline customers to cable competitors. The project involves two main tasks: 1) inference, understanding what kind of customers are churning, and 2) prediction, developing a predictive model with high accuracy to forecast customer churn.
@@ -45,7 +45,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 ### Supermarket Generalized Beer Recommendation
 **Description**: This project involved developing a recommender system for ACSE Supermarket to increase sales of Molson Coors products by targeting Budweiser customers. The system utilized transaction data to cluster customers based on their purchasing patterns and employed logistic regression models to predict the likelihood of customers switching to Molson Coors products.
 
-**Tools Used**: Python, scikit-learn (for clustering and logistic regression), pandas (for data manipulation and preparation),  matplotlib/seaborn (for data visualization)
+**Tools Used**: Google BigQuery (for retrieving over 1 billion rows of data), Python, scikit-learn (for clustering and logistic regression), pandas (for data manipulation and preparation),  matplotlib/seaborn (for data visualization)
 
 **Techniques**: K-means clustering, logistic regression, association rule mining (Apriori algorithm)
 
@@ -57,7 +57,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
  
 ## Natural Language Processing
 ### Amazon Reviews Analysis
-**Description**: This project analyzes Amazon reviews in the beauty category from 2000-2015 to identify trends and make recommendations for improving the user experience and optimizing product offerings for sellers. The goal is to advise Amazon on the types of reviews that customers find most useful and guide sellers on key topic that influence consumer behavior.
+**Description**: This project analyzes 5.5 million Amazon reviews in the beauty category from 2000 to 2015 to identify trends and make recommendations for improving the user experience and optimizing product offerings for sellers. The goal is to advise Amazon on the types of reviews that customers find most useful and guide sellers on key topics that influence consumer behavior.
 
 **Tools Used**: PySpark (for data processing, topic modeling, and sentiment analysis), AWS S3 and HDFS (for data storage and processing), Natural Language Toolkit NLTK (for text processing), Gensim (for topic modeling)
 
@@ -82,7 +82,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Presentation**: [Linear Programming Optimization for Crispy Critters Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Slides%20and%20Reports/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Slide%20Deck.pdf)
 
-**Code Notebook**: [Linear Programming Optimization for Crispy Critters Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Code%20Notebooks/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Code%20Notebook.ipynb
+**Code Notebook**: [Linear Programming Optimization for Crispy Critters Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Code%20Notebooks/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Code%20Notebook.ipynb)
 
  <br />
  
