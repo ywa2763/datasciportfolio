@@ -10,7 +10,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Techniques**: Anomaly detection (LOESS curve fitting, Facebook Prophet, z-score, seasonal decomposition), trend removal, similarity metric calculation (Jaccard similarity, KS statistic, slope of cumulative curve), clustering
 
-**Presentation**: [Paramount Project Showcase](https://github.com/ywa2763/datasciportfolio/blob/4aba8f1c5a33138c0c606dd5c89416c366753434/Slides%20and%20Reports/Paramount%20Practicum%20Showcase.pdf)
+**Presentation**: [Paramount Project Showcase Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/4aba8f1c5a33138c0c606dd5c89416c366753434/Slides%20and%20Reports/Paramount%20Practicum%20Showcase.pdf)
 
  <br />
  
@@ -37,7 +37,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Presentation**: [Predicting Customer Churn Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/24ccf3c99ee53f283cd0caf0b0f1dfe67b55bce6/Slides%20and%20Reports/Predicting%20Customer%20Churn%20Slide%20Deck.pdf)
 
-**Code Notebook**: [Predicting Customer Churn Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/dc043cd223a40378b697509ac1d906934f598624/Code%20Notebooks/Predicting%20Customer%20Churn%20Code%20Notebook.Rmd)
+**Code Notebook**: [Predicting Customer Churn Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/1afe7afa7dec97bd29fe871a526af82b0397e84b/Code%20Notebooks/Customer%20Characteristics%20Analysis%20Code.ipynb)
 
  <br />
  
@@ -51,7 +51,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Key Insights**: Identified 42,000 potential customers for Molson Coors with tailored recommendations to support targeted marketing strategies. Association rules revealed key sub-categories influencing beer purchases, which can inform business decisions.
 
-**Report**: [Supermarket Generalized Beer Recommendation](https://github.com/ywa2763/datasciportfolio/blob/faf8e99e7f5c73f85cc0d1f1c77a0e69555d68a1/Slides%20and%20Reports/Supermarket%20Generalized%20Beer%20Recommendation%20Report.pdf)
+**Report**: [Supermarket Generalized Beer Recommendation Report](https://github.com/ywa2763/datasciportfolio/blob/faf8e99e7f5c73f85cc0d1f1c77a0e69555d68a1/Slides%20and%20Reports/Supermarket%20Generalized%20Beer%20Recommendation%20Report.pdf)
 
  <br />
  
@@ -80,9 +80,9 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Techniques**: 
 
-**Presentation**: 
+**Presentation**: [Linear Programming Optimization for Crispy Critters Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Slides%20and%20Reports/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Slide%20Deck.pdf)
 
-**Code Notebook**: 
+**Code Notebook**: [Linear Programming Optimization for Crispy Critters Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Code%20Notebooks/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Code%20Notebook.ipynb
 
  <br />
  
@@ -93,16 +93,11 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Techniques**: 
 
-**Presentation**: 
+**Presentation**: [Simulation Optimization for Regency Bank Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Slides%20and%20Reports/Simulation%20Optimization%20for%20Regency%20Bank%20Slide%20Deck.pdf)
 
-**Code Notebook**: 
+**Code Notebook**: [Simulation Optimization for Regency Bank Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Code%20Notebooks/Simulation%20Optimization%20for%20Regency%20Bank%20Code%20Notebook.ipynb)
 
  <br />
- 
-## Marketing Analytics
-### 
-
-<br />
 
 ## Network Analytics
 ### Twitch Network Analysis
@@ -116,8 +111,8 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Code Notebook**: [Twitch Network Analysis Code Notebook](https://github.com/ywa2763/datasciportfolio/blob/edb40bf6519b182dc4bc0adab905052464fa345a/Code%20Notebooks/Twitch%20Network%20Analysis%20Code.Rmd)
 
- <br />
- 
+<br />
+
 ## Data Visualization
 ### Global Food Demand and Production Dashboard
 **Description**: 
@@ -126,20 +121,6 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 **Techniques**: 
 
-**Presentation**: 
+**Presentation**: [Global Food Demand and Production Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/8ac8e8a79d15ce0b3fccdcd56524d0094f78bae8/Slides%20and%20Reports/Global%20Food%20Demand%20and%20Production%20Slide%20Deck.pdf)
 
-**Tableau Dashboard**: 
-
- <br />
- 
-### Redesign of World's Biggest Oil Producers Dashboard
-**Description**: 
-
-**Tools Used**: 
-
-**Techniques**: 
-
-**Presentation**: 
-
-**Tableau Dashboard**: 
-
+**Tableau Dashboard**: [Global Food Demand and Production Dashboard](https://public.tableau.com/app/profile/yifei.wang7456/viz/GlobalFoodDemandsandProduction/MarketDashboard)
