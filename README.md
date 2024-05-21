@@ -2,9 +2,6 @@
 Welcome to my data science portfolio. Here, you will find a compilation of my work in various areas of data science, including code notebooks, slide decks, and reports. Each section is dedicated to a specific type of problem or analysis. Click on the links to explore my projects in detail.
 
  <br />
-
- ## Table of Contents
- 1. [This is the link text](##Paramount-Practicum-Project-Showcase)
  
 ## Paramount Practicum Project Showcase 
 **Description**: The practicum project for Paramount involved developing a systematic method to detect consistent interactions between shows to inform content exploitation decisions. The objective was to help inform decisions evolved around enhancing user engagement.
