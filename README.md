@@ -2,6 +2,9 @@
 Welcome to my data science portfolio. Here, you will find a compilation of my work in various areas of data science, including code notebooks, slide decks, and reports. Each section is dedicated to a specific type of problem or analysis. Click on the links to explore my projects in detail.
 
  <br />
+
+ ## Table of Contents
+ 1. [This is the link text](##Paramount-Practicum-Project-Showcase)
  
 ## Paramount Practicum Project Showcase 
 **Description**: The practicum project for Paramount involved developing a systematic method to detect consistent interactions between shows to inform content exploitation decisions. The objective was to help inform decisions evolved around enhancing user engagement.
@@ -31,7 +34,7 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 ### Predicting Customer Churn
 **Description**: This project addresses the issue of customer churn for a telecommunications company experiencing a loss of landline customers to cable competitors. The project involves two main tasks: 1) inference, understanding what kind of customers are churning, and 2) prediction, developing a predictive model with high accuracy to forecast customer churn.
 
-**Tools Used**: R, caret, ModelMetrics, pROC, keras, tensorflow, dplyr, ggplot2, xgboost, glmnet, ISLR, gbm
+**Tools Used**: R(caret, ModelMetrics, pROC, keras, tensorflow, dplyr, ggplot2, xgboost, glmnet, ISLR, gbm)
 
 **Techniques**: Logistic regression, feature selection, neural networks, random forest, XGBoost, Adaboost
 
@@ -74,11 +77,13 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
  
 ## Prescriptive (Optimization) Analytics
 ### Linear Programming Optimization for Crispy Critters
-**Description**: 
+**Description**: The objective of this project is to optimize the production process for Crispy Critters using linear programming techniques. The goal is to maximize profit while considering constraints such as resource availability, production capacity, and market demand.
 
-**Tools Used**: 
+**Tools Used**: Python, Gurobi, Pandas
 
-**Techniques**: 
+**Techniques**: Linear programming formulation, optimization, sensitivity analysis
+
+**Key Insights**: Determination of the optimal mix of products to maximize profit given the constraints, insights into how resources are allocated in the identified optimal solution, identification of bottlenecks, and analysis of how changes in market demand affect the production plan and overall profitability.
 
 **Presentation**: [Linear Programming Optimization for Crispy Critters Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Slides%20and%20Reports/Linear%20Programming%20Optimization%20for%20Crispy%20Critters%20Slide%20Deck.pdf)
 
@@ -87,11 +92,13 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
  <br />
  
 ### Simulation Optimization for Regency Bank
-**Description**: 
+**Description**: This project involves optimizing the migration strategy for Regency Bank's newly acquired client portfolio from Continental Bank. By using simulation and optimization techniques, the project aims to determine the best policies for migrating clients based on their risk, complexity, and annual spend to maximize net profits over a three-year period.
 
-**Tools Used**: 
+**Tools Used**: Python, NumPy, Pandas
 
-**Techniques**: 
+**Techniques**: Simulation modeling, Monte Carlo simulation, optimization
+
+**Key Insights**: Determination of optimal migration strategy (significantly increases profits compared to migrating all clients or using simpler risk-only criteria) and risk management.
 
 **Presentation**: [Simulation Optimization for Regency Bank Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/6f5c703d463bc359d6fa62eb3c56766e247cce6d/Slides%20and%20Reports/Simulation%20Optimization%20for%20Regency%20Bank%20Slide%20Deck.pdf)
 
@@ -101,11 +108,13 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 ## Network Analytics
 ### Twitch Network Analysis
-**Description**: 
+**Description**: This project analyzes the network of English-speaking Twitch streamers to understand user connectivity, identify key influencers, and predict potential new connections. The analysis focuses on both the network structure and individual streamer characteristics to provide insights for improving user engagement and retention.
 
-**Tools Used**: 
+**Tools Used**: R, igraph, mclust, ergm, ggplot2
 
-**Techniques**: 
+**Techniques**: Network analysis, centrality measures, clustering, link prediction
+
+**Key Insights**: The Twitch streamer network is generally sparse, with a subset of highly interconnected streamers forming a core group. High closeness centrality streamers tend to form tight-knit communities, while high betweenness centrality streamers act as bridges across the network. Streamers using explicit language and those in the Twitch Partner Program are more likely to form new connections, particularly as initiators of ties.
 
 **Report**: [Twitch Network Analysis Report](https://github.com/ywa2763/datasciportfolio/blob/7d9b284309941fe0cb6655052189d0345ced53be/Slides%20and%20Reports/Twitch%20Network%20Analysis%20Report.pdf)
 
@@ -115,11 +124,11 @@ Welcome to my data science portfolio. Here, you will find a compilation of my wo
 
 ## Data Visualization
 ### Global Food Demand and Production Dashboard
-**Description**: 
+**Description**: This project explores global food demand and production trends to understand how to feed the world today. It uses data visualization techniques to analyze and display trends across regions and food categories, addressing key questions about market size, distribution, and production contributors.
 
-**Tools Used**: 
+**Tools Used**: R(caret, dplyr, ggplot2), Tableau
 
-**Techniques**: 
+**Techniques**: Data cleaning, data preprocessing, EDA, data visualization (tree map, stacked bar chart, choropleth, etc.), dashboard creation
 
 **Presentation**: [Global Food Demand and Production Slide Deck](https://github.com/ywa2763/datasciportfolio/blob/8ac8e8a79d15ce0b3fccdcd56524d0094f78bae8/Slides%20and%20Reports/Global%20Food%20Demand%20and%20Production%20Slide%20Deck.pdf)
 
